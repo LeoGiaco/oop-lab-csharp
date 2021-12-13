@@ -36,30 +36,21 @@ namespace OperatorsOverloading
         /// </summary>
         /// <param name="enumerable">the array of elements to put on the list.</param>
         /// <returns>a new list with the given elements.</returns>
-        public static implicit operator List<TValue>(TValue[] enumerable)
-        {
-            throw new NotImplementedException();
-        }
+        public static implicit operator List<TValue>(TValue[] enumerable) => List.From<TValue>(enumerable);
 
         /// <summary>
         /// Converts the given element into a new list implicitly.
         /// </summary>
         /// <param name="element">the element to put on the list.</param>
         /// <returns>a new list with only the given element.</returns>
-        public static implicit operator List<TValue>(TValue element)
-        {
-            throw new NotImplementedException();
-        }
+        public static implicit operator List<TValue>(TValue element) => List.Of(element);
 
         /// <summary>
         /// Converts the given list into a new array explicitly.
         /// </summary>
         /// <param name="list">the list to transform.</param>
         /// <returns>an array containing the elements of the list.</returns>
-        public static explicit operator TValue[](List<TValue> list)
-        {
-            throw new NotImplementedException();
-        }
+        public static explicit operator TValue[](List<TValue> list) => list.ToFlat().ToArray();
 
         /// <summary>
         /// Determines whether two lists are equal by comparing each of the elements of the lists.
@@ -72,7 +63,24 @@ namespace OperatorsOverloading
         /// </returns>
         public static bool operator ==(List<TValue> list1, List<TValue> list2)
         {
-            throw new NotImplementedException();
+            if (list1.Length != list2.Length)
+                return false;
+            else
+            {
+                IEnumerator<TValue> en1 = list1.ToFlat().GetEnumerator();
+                IEnumerator<TValue> en2 = list2.ToFlat().GetEnumerator();
+                for (int i = 0; i < list1.Length; i++)
+                {
+                    if (en1.Current.Equals(en2.Current))
+                    {   // CONTINUE HERE.
+                        en1.MoveNext();
+                        en2.MoveNext();
+                    }
+                    else
+                        return false;
+                }
+                return true;
+            }
         }
 
         /// <summary>
@@ -85,7 +93,7 @@ namespace OperatorsOverloading
         /// </returns>
         public static bool operator !=(List<TValue> list1, List<TValue> list2)
         {
-            throw new NotImplementedException();
+            return !(list1 == list2);
         }
 
         /// <summary>
