@@ -1,32 +1,55 @@
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Collections
 {
     public class SocialNetworkUser<TUser> : User, ISocialNetworkUser<TUser>
         where TUser : IUser
     {
+        private IDictionary<string, IList<TUser>> _groups;
         public SocialNetworkUser(string fullName, string username, uint? age) : base(fullName, username, age)
         {
-            throw new NotImplementedException("TODO is there anything to do here?");
+            Groups = new Dictionary<string, IList<TUser>>();
         }
 
         public bool AddFollowedUser(string group, TUser user)
         {
-            throw new NotImplementedException("TODO add user to the provided group. Return false if the user was already in the group");
+            if(!Groups.ContainsKey(group))
+                Groups.Add(group, new List<TUser>() { user });
+            else
+            {
+                if(! Groups[group].Contains(user))
+                    Groups[group].Add(user);
+                else return false;
+            }
+            return true;
         }
 
         public IList<TUser> FollowedUsers
         {
             get
             {
-                throw new NotImplementedException("TODO construct and return the list of all users followed by the current users, in all groups");
+                ISet<TUser> set = new HashSet<TUser>();
+                foreach(IList<TUser> l in Groups.Values)
+                    set.UnionWith(l);
+                return set.ToList();
             }
+        }
+
+        private IDictionary<string, IList<TUser>> Groups
+        {
+            get => _groups;
+            set => _groups = value;
         }
 
         public ICollection<TUser> GetFollowedUsersInGroup(string group)
         {
-            throw new NotImplementedException("TODO construct and return a collection containing of all users followed by the current users, in group");
+            if(Groups.ContainsKey(group))
+                return Groups[group];
+            else
+                return new List<TUser>();
         }
     }
 }
